@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 
+fontStockStatus="Helvetica 12 italic"
 
 # sg.theme('DarkBlue12')
 MAX_ROWS = 10
@@ -13,7 +14,7 @@ columm_layout =  [[sg.Text(str(i), size=(4, 1), justification='left')] + [sg.Inp
 
 layout4 = [
             [sg.Text('VAS store', size=(100, 1), pad=(0, (30,0)), justification='center', font=("Helvetica", 25))],
-            [sg.Text('Stock Status', pad=((50,0),(0,0)) )],
+            [sg.Text('Stock Status', pad=((50,0),(0,0)), font=fontStockStatus )],
             [sg.Text(size=(10, 1))]+ [sg.Text(h, size=(different_column_size1[headings.index(h)], 1), pad=((0,17),(0,0)) ) for h in headings],
             [sg.Col(columm_layout, size=(750, 300), scrollable=False, pad=(0,0))],
             [sg.Submit('Export To Excel', pad=((380,0),(0,0)) ), sg.Cancel('Exit', pad=((10,0),(0,0)) )],
