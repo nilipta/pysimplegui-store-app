@@ -9,7 +9,7 @@ import PySimpleGUI as sg
 
 from mainConfiguration import *
 
-window = sg.Window('VAS store', layout, size=(800, 480), no_titlebar=False, auto_size_buttons=True, location=(0,0), resizable=True)
+window = sg.Window('VAS store', layout, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,0), resizable=True)
 windowNo=1
 window2 = sg.Window('VAS store', layout2, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,50), resizable=False)
 window3 = sg.Window('VAS store', layout3, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,50), resizable=False)
@@ -104,6 +104,9 @@ def continueReading():
             windowNo=1
             window.refresh()
             window2.refresh()
+        elif event2 == '-update2-':
+            addButtonClick(values2, window2)
+            values2=0
         if event3 == 'Exit':
             print('win3 hide')
             window3.Hide()
