@@ -6,3 +6,7 @@ class SearchPattern(Enum):
     LOCATION = 1
     PARTNO = 2
     UNDEFINED = 3
+
+class shouldUpdateOrInsert(Enum):
+    INSERT = 1
+    UPDATE = 2

@@ -1,5 +1,6 @@
 import psycopg2
 from datetime import date
+from mainConfiguration import shouldUpdateOrInsert as crud_op
 
 class database:
     connection = 0
@@ -54,7 +55,9 @@ class database:
 
         return record
 
-    def getStocks(self, newRecord = False):
+
+
+    def getStocksFunction(self, newRecord = False):
         if(len(self.allStocks) == 0 or newRecord is True):
             try:
                 self.connect()
@@ -63,12 +66,9 @@ class database:
 
             # if(queryText.len() > 0):
             print ("going \n")
-            self.cursor.execute("""SELECT * from stock""")
+            self.cursor.callproc('usp_get_stock')
             record = self.cursor.fetchall()
-            # else:
-            #     # Print PostgreSQL version
-            #     self.cursor.execute("SELECT version();")
-            #     record = self.cursor.fetchone()
+            print("Fetched : ", record)
             try:
                 self.cursor.close()
                 self.connection.close()
@@ -81,21 +81,29 @@ class database:
 
         return self.allStocks
 
-    def insert_page2(self, loc, partNo, BoxNo):
+    def crud_stock(self, insertOrUpdate, _location, _part_number, _box_no):
         try:
             self.connect()
         except (Exception, psycopg2.Error) as error :
             print ("Error while connecting to PostgreSQL", error)
 
-        postgres_insert_query = """ INSERT INTO stock (locations, part_number, box_number, type_tranx, created_by, is_active, created_date, remarks) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
-        record_to_insert = (loc, partNo, BoxNo, 'IN', 'pa', 'true', date.today(), 'test')
-        self.cursor.execute(postgres_insert_query, record_to_insert)
+        lastid = None        
+        
+        print ("checking ::: ", _location, _part_number, _box_no);
+        if crud_op.INSERT is insertOrUpdate:
+            lastid = self.cursor.callproc('usp_crud_stock', ("I", 0, _location , _part_number, _box_no, "no remark", "IN", "pa") )
+            # self.cursor.execute('SELECT LASTVAL()')
+            # lastid = self.cursor.fetchone()[0]
+            print("status : " , lastid)
+            
+        elif crud_op.UPDATE is insertOrUpdate:
+            self.cursor.execute(usp_crud_stock, () )
+            self.cursor.execute('SELECT LASTVAL()')
+            lastid = self.cursor.fetchone()[0]
+            print("status : " , lastid)
 
         self.connection.commit()
-        
-        self.cursor.execute('SELECT LASTVAL()')
-        lastid = self.cursor.fetchone()[0]
-        print("status : " , lastid)
+
         try:
             self.cursor.close()
             self.connection.close()
@@ -107,4 +115,58 @@ class database:
             return False
         else:
             return True
+
+    # def getStocks(self, newRecord = False):
+    #     if(len(self.allStocks) == 0 or newRecord is True):
+    #         try:
+    #             self.connect()
+    #         except (Exception, psycopg2.Error) as error :
+    #             print ("Error while connecting to PostgreSQL", error)
+
+    #         # if(queryText.len() > 0):
+    #         print ("going \n")
+    #         self.cursor.execute("""SELECT * from stock""")
+    #         record = self.cursor.fetchall()
+    #         # else:
+    #         #     # Print PostgreSQL version
+    #         #     self.cursor.execute("SELECT version();")
+    #         #     record = self.cursor.fetchone()
+    #         try:
+    #             self.cursor.close()
+    #             self.connection.close()
+    #             print("PostgreSQL connection is closed")
+    #         except (Exception, psycopg2.Error) as error :
+    #             print ("Error while connecting to PostgreSQL", error)
+
+    #         self.allStocks = record
+    #         return self.allStocks
+
+    #     return self.allStocks
+
+    # def insert_page2(self, loc, partNo, BoxNo):
+    #     try:
+    #         self.connect()
+    #     except (Exception, psycopg2.Error) as error :
+    #         print ("Error while connecting to PostgreSQL", error)
+
+    #     postgres_insert_query = """ INSERT INTO stock (locations, part_number, box_number, type_tranx, created_by, is_active, created_date, remarks) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
+    #     record_to_insert = (loc, partNo, BoxNo, 'IN', 'pa', 'true', date.today(), 'test')
+    #     self.cursor.execute(postgres_insert_query, record_to_insert)
+
+    #     self.connection.commit()
+        
+    #     self.cursor.execute('SELECT LASTVAL()')
+    #     lastid = self.cursor.fetchone()[0]
+    #     print("status : " , lastid)
+    #     try:
+    #         self.cursor.close()
+    #         self.connection.close()
+    #         print("PostgreSQL connection is closed")
+    #     except (Exception, psycopg2.Error) as error :
+    #         print ("Error while connecting to PostgreSQL", error)
+        
+    #     if lastid==None:
+    #         return False
+    #     else:
+    #         return True
 

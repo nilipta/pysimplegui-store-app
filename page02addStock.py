@@ -18,12 +18,16 @@ layout2 = [
 
 def addButtonClick(valArg, winArg):
     print("add to database clicked");
-    database1 = database()
-    status = database1.insert_page2(str(valArg['-location-']), str(valArg['-part-']), str(valArg['-boxNo-']))
-    del database1
+    database2 = database()
+    status = False
+    if isinstance(int(valArg['-boxNo-']), int):
+        status = database2.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']))
+    del database2
     if status:
         sg.popup('Insert done!', location=popupPlace)
         winArg['-location-'].update('')
         winArg['-part-'].update('')
         winArg['-boxNo-'].update('')
+    else:
+        sg.popup('Insert Error!', location=popupPlace)
         

@@ -90,6 +90,7 @@ def continueReading():
             windowNo=3
             window.refresh()
             window3.refresh()
+            withdrawClicked(window3, values3)
         if event == 'Stock Status':
             # sg.theme('Dark Brown 2')
             window4.UnHide()

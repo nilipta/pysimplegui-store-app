@@ -3,13 +3,13 @@ from mainDatabase import *
 
 
 database1 = database()
-stocks = database1.getStocks()
+stocks = database1.getStocksFunction(True)
 partAddressArr = []
 for stock in stocks :
+    if stock[0] not in partAddressArr:
+        partAddressArr.append(stock[0])
     if stock[1] not in partAddressArr:
         partAddressArr.append(stock[1])
-    if stock[2] not in partAddressArr:
-        partAddressArr.append(stock[2])
 print("home: ", partAddressArr)
 del database1
 layout = [
