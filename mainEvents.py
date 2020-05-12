@@ -9,7 +9,7 @@ import PySimpleGUI as sg
 
 from mainConfiguration import *
 
-window = sg.Window('VAS store', layout, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,0), resizable=True)
+window = sg.Window('VAS store', layout, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,50), resizable=True)
 windowNo=1
 window2 = sg.Window('VAS store', layout2, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,50), resizable=False)
 window3 = sg.Window('VAS store', layout3, size=(800, 480), no_titlebar=True, auto_size_buttons=True, location=(0,50), resizable=False)
@@ -45,6 +45,11 @@ def continueReading():
     #part number search
     event6=0
     values6=0
+
+    # local flags
+    withdrawRefresh = False
+
+
     while True:             # Event Loop
         if windowNo==1:
             event, values = window.read()    # returns every 500 ms
@@ -78,19 +83,27 @@ def continueReading():
             if SearchPattern.PARTNO == result:
                 window6.UnHide()
                 windowNo=6
+
+        # functions are cllaed
+        if withdrawRefresh is True:
+            withdrawClicked(window3, event3)
+            withdrawRefresh = False
+        
         if event == 'Add Stock':
             window2.UnHide()
             # print('add sock')
             windowNo=2
+            window.TKroot.focus_force() 
             window.refresh()
             window2.refresh()
         if event == 'Withdraw Stock':
             window3.UnHide()
             # print('Withdraw sock')
             windowNo=3
+            window.TKroot.focus_force() 
             window.refresh()
             window3.refresh()
-            withdrawClicked(window3, values3)
+            withdrawRefresh = True
         if event == 'Stock Status':
             # sg.theme('Dark Brown 2')
             window4.UnHide()
@@ -99,6 +112,7 @@ def continueReading():
             window4.refresh()
         if event2 == 'Exit':
             print('win2 hide')
+            clearFields2(window2)
             window2.Hide()
             event2=0
             values2=0
@@ -110,6 +124,7 @@ def continueReading():
             values2=0
         if event3 == 'Exit':
             print('win3 hide')
+            clearFields3(window3)
             window3.Hide()
             event3=0
             values3=0
