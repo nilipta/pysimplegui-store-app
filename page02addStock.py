@@ -20,16 +20,23 @@ def addButtonClick(valArg, winArg):
     print("add to database clicked");
     database2 = database()
     status = False
-    if isinstance(int(valArg['-boxNo-']), int):
-        status = database2.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']))
-    del database2
-    if status:
-        sg.popup('Insert done!', location=popupPlace)
-        clearFields2(winArg)    
-    else:
-        sg.popup('Insert Error!', location=popupPlace)
-        
+    try:
+        if isinstance(int(valArg['-boxNo-']), int):
+            status = database2.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']))
+            del database2
+        if status:
+            sg.popup('Insert done!', location=popupPlace)
+            clearFields2(winArg)    
+        else:
+            sg.popup('Insert Error!', location=popupPlace)
+    except ValueError:
+        print("Could not convert data to an integer.")
+    finally:
+        pass
+    
+
 def clearFields2(winArg):
     winArg['-location-'].update('')
     winArg['-part-'].update('')
     winArg['-boxNo-'].update('')
+

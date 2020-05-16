@@ -6,23 +6,19 @@ class database:
     connection = 0
     cursor = 0
     allStocks = []
+    allStatusStocks = []
     def __init__(self):
         try:
             self.connect()
-            self.cursor.execute("SELECT version();")
-            record = self.cursor.fetchone()
-            # Print PostgreSQL Connection properties
-            # print ( connection.get_dsn_parameters(),"\n")
-            print("You are connected to - ", record,"\n")
 
         except (Exception, psycopg2.Error) as error :
             print ("Error while connecting to PostgreSQL", error)
         finally:
             #closing database connection.
-                if(self.connection):
-                    self.cursor.close()
-                    self.connection.close()
-                    print("PostgreSQL connection is closed")
+            if(self.connection):
+                self.cursor.close()
+                self.connection.close()
+                print("PostgreSQL connection is closed")
     def connect(self):
         self.connection = psycopg2.connect(user = "postgres",
                             password = "postgres",
@@ -32,28 +28,32 @@ class database:
 
         self.cursor = self.connection.cursor()
 
-    def executeQUery(self, queryText):
-        try:
-            self.connect()
-        except (Exception, psycopg2.Error) as error :
-            print ("Error while connecting to PostgreSQL", error)
+    def executeQUery(self, queryText, newRecord = False):
+        if(len(self.allStatusStocks) == 0 or newRecord is True):
+            try:
+                self.connect()
+            except (Exception, psycopg2.Error) as error :
+                print ("Error while connecting to PostgreSQL", error)
+            
+            recordLocal = []
 
-        # if(queryText.len() > 0):
-        self.cursor.execute(queryText)
-        record = self.cursor.fetchall()
-        print("You are connected to - ", record,"\n")
-        # else:
-        #     # Print PostgreSQL version
-        #     self.cursor.execute("SELECT version();")
-        #     record = self.cursor.fetchone()
-        try:
-            self.cursor.close()
-            self.connection.close()
-            print("PostgreSQL connection is closed")
-        except (Exception, psycopg2.Error) as error :
-            print ("Error while connecting to PostgreSQL", error)
+            if(len(queryText) > 0):
+                self.cursor.execute(queryText)
+                recordLocal = self.cursor.fetchall()
+                # print("You are connected to - ", recordLocal,"\n")
+                
+                # save data for status table if only 5 column of data we received
+                if len(recordLocal[0]) is 5:
+                    self.allStatusStocks = recordLocal
+            try:
+                self.cursor.close()
+                self.connection.close()
+                print("PostgreSQL connection is closed")
+            except (Exception, psycopg2.Error) as error :
+                print ("Error while connecting to PostgreSQL", error)
 
-        return record
+            return self.allStatusStocks
+        return self.allStatusStocks
 
 
 
@@ -81,7 +81,7 @@ class database:
 
         return self.allStocks
 
-    def crud_stock(self, insertOrUpdate, _location, _part_number, _box_no):
+    def crud_stock(self, insertOrUpdate, _location, _part_number, _box_no, _IN_or_OUT = "IN"):
         try:
             self.connect()
         except (Exception, psycopg2.Error) as error :
@@ -89,9 +89,9 @@ class database:
 
         lastid = None        
         
-        print ("checking ::: ", _location, _part_number, _box_no);
+        # print ("checking ::: ", _location, _part_number, _box_no);
         if crud_op.INSERT is insertOrUpdate:
-            lastid = self.cursor.callproc('usp_crud_stock', ("I", 0, _location , _part_number, _box_no, "no remark", "IN", "pa") )
+            lastid = self.cursor.callproc('usp_crud_stock', ("I", 0, _location , _part_number, _box_no, "no remark", _IN_or_OUT, "pa") )
             # self.cursor.execute('SELECT LASTVAL()')
             # lastid = self.cursor.fetchone()[0]
             print("status : " , lastid)
@@ -116,57 +116,5 @@ class database:
         else:
             return True
 
-    # def getStocks(self, newRecord = False):
-    #     if(len(self.allStocks) == 0 or newRecord is True):
-    #         try:
-    #             self.connect()
-    #         except (Exception, psycopg2.Error) as error :
-    #             print ("Error while connecting to PostgreSQL", error)
 
-    #         # if(queryText.len() > 0):
-    #         print ("going \n")
-    #         self.cursor.execute("""SELECT * from stock""")
-    #         record = self.cursor.fetchall()
-    #         # else:
-    #         #     # Print PostgreSQL version
-    #         #     self.cursor.execute("SELECT version();")
-    #         #     record = self.cursor.fetchone()
-    #         try:
-    #             self.cursor.close()
-    #             self.connection.close()
-    #             print("PostgreSQL connection is closed")
-    #         except (Exception, psycopg2.Error) as error :
-    #             print ("Error while connecting to PostgreSQL", error)
-
-    #         self.allStocks = record
-    #         return self.allStocks
-
-    #     return self.allStocks
-
-    # def insert_page2(self, loc, partNo, BoxNo):
-    #     try:
-    #         self.connect()
-    #     except (Exception, psycopg2.Error) as error :
-    #         print ("Error while connecting to PostgreSQL", error)
-
-    #     postgres_insert_query = """ INSERT INTO stock (locations, part_number, box_number, type_tranx, created_by, is_active, created_date, remarks) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
-    #     record_to_insert = (loc, partNo, BoxNo, 'IN', 'pa', 'true', date.today(), 'test')
-    #     self.cursor.execute(postgres_insert_query, record_to_insert)
-
-    #     self.connection.commit()
-        
-    #     self.cursor.execute('SELECT LASTVAL()')
-    #     lastid = self.cursor.fetchone()[0]
-    #     print("status : " , lastid)
-    #     try:
-    #         self.cursor.close()
-    #         self.connection.close()
-    #         print("PostgreSQL connection is closed")
-    #     except (Exception, psycopg2.Error) as error :
-    #         print ("Error while connecting to PostgreSQL", error)
-        
-    #     if lastid==None:
-    #         return False
-    #     else:
-    #         return True
 

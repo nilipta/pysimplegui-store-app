@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 from mainDatabase import *
+from mainConfiguration import *
 
 fontWithdraw="Helvetica 12 italic"
 cancelBtnYplus=50
@@ -13,8 +14,8 @@ for stock in stocks :
         locationsArr.append(stock[0])
     if stock[1] not in partsArr:
         partsArr.append(stock[1])
-print("withdraw partsArr : ", partsArr)
-print("withdraw locationsArr : ", locationsArr)
+# print("withdraw partsArr : ", partsArr)
+# print("withdraw locationsArr : ", locationsArr)
 del database3
 
 #withdraw
@@ -26,7 +27,7 @@ layout3 = [
     [sg.Text('Part Number', size=(15, 2), pad=((100,0),0)), sg.Combo(partsArr,size=(80, 10), key='-withdrawPart-')],
     [sg.Text('Location', size=(15, 2), pad=((100,0),0)),  sg.Combo(locationsArr,size=(80, 10), key='-withdrawLoc-')],
     [sg.Text('Number of Boxes', size=(15, 2), pad=((100,0),0)), sg.InputText('', key='-withdrawBoxNo-', focus=True)],
-    [sg.Submit('Update', pad=((450,0),(cancelBtnYplus,0)) ), sg.Cancel( pad=((10,0),(cancelBtnYplus,0)), key="Exit" )],
+    [sg.Submit('Update', pad=((450,0),(cancelBtnYplus,0)), key="-update3-" ), sg.Cancel( pad=((10,0),(cancelBtnYplus,0)), key="Exit" )],
     ]
 
 
@@ -43,11 +44,27 @@ def withdrawClicked( winArg , valArg):
             locationsArr.append(stock[0])
         if stock[1] not in partsArr:
             partsArr.append(stock[1])
-    print("withdrawClicked + withdraw partsArr : ", partsArr)
-    print("withdrawClicked + withdraw locationsArr : ", locationsArr)
+    # print("withdrawClicked + withdraw partsArr : ", partsArr)
+    # print("withdrawClicked + withdraw locationsArr : ", locationsArr)
     winArg['-withdrawLoc-'].update(values=locationsArr)
     winArg['-withdrawPart-'].update(values=partsArr)
     del database3
 
 def clearFields3(winArg):
     winArg['-withdrawBoxNo-'].update('')
+
+# withdrawHandle(values2, window2)
+
+def withdrawHandle(valArg, winArg):
+    print("withdraw to database clicked");
+    database3 = database()
+    status = False
+    print("valArg['-withdrawBoxNo-'] = ", valArg)
+    if isinstance(int(valArg['-withdrawBoxNo-']), int):
+        status = database3.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-withdrawLoc-']), str(valArg['-withdrawPart-']), int(valArg['-withdrawBoxNo-']), "OUT")
+    del database3
+    if status:
+        sg.popup('Withdrw done!', location=popupPlace)
+        clearFields3(winArg)    
+    else:
+        sg.popup('Insert Error!', location=popupPlace)
