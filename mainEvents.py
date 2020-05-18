@@ -54,6 +54,10 @@ def continueReading():
     prevPageUpdate = False
     isSwitchedToHome = False 
     readyForAddAnother = False ##unused now
+    fillLocationPageData = False
+    fillLocationPageSearchItem = ' '
+    fillPartNoPageData = False
+    fillPartNoPageDataSearchItem = ' '
 
     while True:             # Event Loop
         # functions are cllaed
@@ -69,6 +73,14 @@ def continueReading():
         if prevPageUpdate is True:
             prevPage(window4, statusTablePageNumber )
             prevPageUpdate = False
+        if fillLocationPageData is True:
+            handleLocationForm(window5, fillLocationPageSearchItem)
+            fillLocationPageData = False
+            fillLocationPageSearchItem = ' '
+        if fillPartNoPageData is True:
+            handlePartNoForm(window6, fillPartNoPageDataSearchItem)
+            fillPartNoPageData = False
+            fillPartNoPageDataSearchItem = ' ' 
 
         #---------------------HOME SCREEN--------------------------------------#
 
@@ -97,18 +109,23 @@ def continueReading():
                 window3.refresh()
                 withdrawRefresh = True
 
-            # elif event == 'Search':
-                # result = handleSearch(values['-MainSearchId-'])
-                # if SearchPattern.UNDEFINED == result:
-                # sg.popup('Enter proper partno / location', custom_text=("Close"), button_color=("black","red"), location=popupPlace )
-                # if SearchPattern.LOCATION == result:
-                # window5.UnHide()
-                # windowNo=5
-                # if SearchPattern.PARTNO == result:
-                # window6.UnHide()
-                # windowNo=6
+            elif event == 'Search':
+                result = handleSearch(values['-MainSearchId-'])
+                if SearchPattern.UNDEFINED == result:
+                    sg.popup('Enter proper partno / location', custom_text=("Close"), button_color=("black","red"), location=popupPlace )
+                if SearchPattern.LOCATION == result:
+                    window5.UnHide()
+                    windowNo=5
+                    fillLocationPageData = True
+                    fillLocationPageSearchItem = (values['-MainSearchId-'])
+                if SearchPattern.PARTNO == result:
+                    window6.UnHide()
+                    windowNo=6
+                    fillPartNoPageData = True
+                    fillPartNoPageDataSearchItem = (values['-MainSearchId-'])
             elif event == 'Stock Status':
-                print("open add screen")
+                print("open status screen")
+                statusTablePageNumber = 0
                 windowNo=4
                 window.refresh()
                 statusRefresh = True

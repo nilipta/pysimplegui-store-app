@@ -4,13 +4,13 @@ from mainDatabase import *
 
 database1 = database()
 stocks = database1.getStocksFunction(True)
+print("home: ", stocks)
 partAddressArr = []
 for stock in stocks :
     if stock[0] not in partAddressArr:
         partAddressArr.append(stock[0])
     if stock[1] not in partAddressArr:
         partAddressArr.append(stock[1])
-print("home: ", partAddressArr)
 del database1
 layout = [
     [sg.Text('VAS store', size=(100, 1), pad=(0, (30,0)), justification='center', font=("Helvetica", 25))],

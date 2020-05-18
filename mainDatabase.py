@@ -18,7 +18,7 @@ class database:
             if(self.connection):
                 self.cursor.close()
                 self.connection.close()
-                print("PostgreSQL connection is closed")
+                # print("PostgreSQL connection is closed")
     def connect(self):
         self.connection = psycopg2.connect(user = "postgres",
                             password = "postgres",
@@ -48,14 +48,12 @@ class database:
             try:
                 self.cursor.close()
                 self.connection.close()
-                print("PostgreSQL connection is closed")
+                # print("PostgreSQL connection is closed")
             except (Exception, psycopg2.Error) as error :
                 print ("Error while connecting to PostgreSQL", error)
 
             return self.allStatusStocks
         return self.allStatusStocks
-
-
 
     def getStocksFunction(self, newRecord = False):
         if(len(self.allStocks) == 0 or newRecord is True):
@@ -68,11 +66,11 @@ class database:
             print ("going \n")
             self.cursor.callproc('usp_get_stock')
             record = self.cursor.fetchall()
-            print("Fetched : ", record)
+            # print("Fetched : ", record)
             try:
                 self.cursor.close()
                 self.connection.close()
-                print("PostgreSQL connection is closed")
+                # print("PostgreSQL connection is closed")
             except (Exception, psycopg2.Error) as error :
                 print ("Error while connecting to PostgreSQL", error)
 
@@ -107,7 +105,7 @@ class database:
         try:
             self.cursor.close()
             self.connection.close()
-            print("PostgreSQL connection is closed")
+            # print("PostgreSQL connection is closed")
         except (Exception, psycopg2.Error) as error :
             print ("Error while connecting to PostgreSQL", error)
         
