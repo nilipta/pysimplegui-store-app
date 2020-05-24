@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 from mainDatabase import *
 from mainConfiguration import *
+from mainValidation import checkWhetherWithdrawInWithdrawStock
 
 fontWithdraw="Helvetica 12 italic"
 cancelBtnYplus=50
@@ -53,18 +54,21 @@ def withdrawClicked( winArg , valArg):
 def clearFields3(winArg):
     winArg['-withdrawBoxNo-'].update('')
 
-# withdrawHandle(values2, window2)
-
 def withdrawHandle(valArg, winArg):
     print("withdraw to database clicked");
     database3 = database()
     status = False
     print("valArg['-withdrawBoxNo-'] = ", valArg)
-    if isinstance(int(valArg['-withdrawBoxNo-']), int):
-        status = database3.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-withdrawLoc-']), str(valArg['-withdrawPart-']), int(valArg['-withdrawBoxNo-']), "OUT")
+    try:
+        if isinstance(int(valArg['-withdrawBoxNo-']), int):
+            checkWhetherWithdrawInWithdrawStock(str(valArg['-withdrawLoc-']), str(valArg['-withdrawPart-']), int(valArg['-withdrawBoxNo-']))
+            status = database3.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-withdrawLoc-']), str(valArg['-withdrawPart-']), int(valArg['-withdrawBoxNo-']), "OUT")
+    except ValueError:
+        sg.PopupError('Enter a proper number.')
     del database3
     if status:
         sg.popup('Withdrw done!', location=popupPlace)
         clearFields3(winArg)    
     else:
         sg.popup('Insert Error!', location=popupPlace)
+    

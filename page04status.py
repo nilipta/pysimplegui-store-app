@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 from mainDatabase import *
+from mainConfiguration import status_col_data_query
 
 fontStockStatus="Helvetica 12 italic"
 
@@ -27,8 +28,8 @@ layout4 = [
 def handleStatus(winArg , valArg):
     print("In status page : " )
     database4 = database()
-    query = "SELECT stock_id,part_number,box_number,created_date,created_by FROM public.stock ORDER BY stock_id"
-    stocks = database4.executeQUery(query, True)
+    stocksdict = database4.executeQUery(status_col_data_query, True)
+    stocks = stocksdict["status-table-data"]
     if len(stocks) <= 10:
         winArg['Next'].update(disabled=True)   
     #as total row count is 10, so 10 row copy from database object
@@ -42,9 +43,9 @@ def handleStatus(winArg , valArg):
 def nextPage(winArg, pageNO ):
     print("next page", pageNO)
     database4 = database()
-    query = "SELECT stock_id,part_number,box_number,created_date,created_by FROM public.stock ORDER BY stock_id"
-    stocks = database4.executeQUery(query, False) #false coz no query to database
-    
+    stocksDict = database4.executeQUery(status_col_data_query, False) #false coz no query to database
+    stocks = stocksDict["status-table-data"]
+
     print("Total lines of data = ", int(len(stocks)) )
     calculateArrayDataPerPage(winArg, stocks, pageNO)
 
@@ -56,8 +57,8 @@ def prevPage(winArg, pageNO ):
         winArg['Prev'].update(disabled=True)
     
     database4 = database()
-    query = "SELECT stock_id,part_number,box_number,created_date,created_by FROM public.stock ORDER BY stock_id"
-    stocks = database4.executeQUery(query, False) #false coz no query to database
+    stocksDict = database4.executeQUery(status_col_data_query, False) #false coz no query to database
+    stocks = stocksDict["status-table-data"]
     
     print("Total lines of data = ", int(len(stocks)) )
     calculateArrayDataPerPage(winArg, stocks, pageNO)

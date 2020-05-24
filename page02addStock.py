@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 from mainDatabase import *
-from mainConfiguration import *
+from mainValidation import *
+from mainConfiguration import popupPlace
 
 cancelBtnYplus = 50
 fontAddStock="Helvetica 12 italic"
@@ -22,13 +23,15 @@ def addButtonClick(valArg, winArg):
     status = False
     try:
         if isinstance(int(valArg['-boxNo-']), int):
-            status = database2.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']))
+            # status = database2.crud_stock(shouldUpdateOrInsert.INSERT, str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']))
+            status = checkWhetherUpdateOrInsertInAddStock( str(valArg['-location-']), str(valArg['-part-']), int(valArg['-boxNo-']) )
             del database2
         if status:
             sg.popup('Insert done!', location=popupPlace)
-            clearFields2(winArg)    
         else:
             sg.popup('Insert Error!', location=popupPlace)
+
+        clearFields2(winArg)    
     except ValueError:
         print("Could not convert data to an integer.")
     finally:
@@ -36,6 +39,7 @@ def addButtonClick(valArg, winArg):
     
 
 def clearFields2(winArg):
+    print('clearing all fields from add field')
     winArg['-location-'].update('')
     winArg['-part-'].update('')
     winArg['-boxNo-'].update('')

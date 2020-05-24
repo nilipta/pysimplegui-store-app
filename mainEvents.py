@@ -5,6 +5,7 @@ from page04status import *
 from page05searchLocation import * 
 from page06searchPart import * 
 from mainValidation import *
+from mainDatabase import *
 import PySimpleGUI as sg
 
 from mainConfiguration import *
@@ -47,6 +48,7 @@ def continueReading():
     values6=0
 
     # local flags
+    reFreshDBLandedOnHomePage = False
     withdrawRefresh = False
     statusRefresh = False
     statusTablePageNumber = 0
@@ -85,6 +87,15 @@ def continueReading():
         #---------------------HOME SCREEN--------------------------------------#
 
         if windowNo==1:
+            if reFreshDBLandedOnHomePage:
+                databaseMain = database()
+                print("calling 5 col query")
+                databaseMain.executeQUery("SELECT stock_id,part_number,box_number,created_date,created_by FROM public.stock ORDER BY stock_id", True)
+                print("calling all col query")
+                databaseMain.executeQUery(stock_table_all_data_query, True)
+                databaseMain.getStocksFunction(True)
+                del databaseMain
+                reFreshDBLandedOnHomePage = False
             event, values = window.read()    # returns every 500 ms
             event2 = 0
             event3 = 0
@@ -156,6 +167,7 @@ def continueReading():
                 event2=0
                 values2=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
 
             elif event2 == '-update2-':
@@ -164,6 +176,7 @@ def continueReading():
                 event2=0
                 values2=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
                 # values2=0
   
@@ -179,6 +192,7 @@ def continueReading():
                 event3=0
                 values3=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
                 window3.refresh()
             elif event3 == '-update3-':
@@ -200,6 +214,7 @@ def continueReading():
                 event4=0
                 values4=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
                 window4.refresh()
             elif event4 == 'Next':
@@ -219,6 +234,7 @@ def continueReading():
                 event5=0
                 values5=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
                 window5.refresh()
             
@@ -231,6 +247,7 @@ def continueReading():
                 event6=0
                 values6=0
                 windowNo=1
+                reFreshDBLandedOnHomePage = True
                 window.refresh()
                 window6.refresh()
 
